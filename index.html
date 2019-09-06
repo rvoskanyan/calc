@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Калькулятор</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="calc">
+    <div class="calc__form-calculation">
+        <label class="form-calculation__input">
+            Выражение:
+            <input type="text" class="input__expression" id="exp" placeholder="a + b - c * d / e">
+        </label>
+        <button onclick="calculate(exp.value)" class="form-calculation__go">GO</button>
+    </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

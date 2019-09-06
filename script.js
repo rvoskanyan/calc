@@ -4,14 +4,21 @@ function calculate(exp) {
 
     let source = exp;
 
-
-
     let arrOperations = ['+', '-', '*', '/'];
     let methods = {
         "+": (a, b) => a + b,
         "-": (a, b) => a - b,
         "*": (a, b) => a * b,
         "/": (a, b) => a / b,
+    }
+
+    exp = exp.replace(/\s/g, "");
+
+    for(let i = 0; i < arrOperations.length; i++) {
+        let replace = '\\' + arrOperations[i];
+        let replaceFrom = new RegExp(replace,'g');
+        let replaceTO = ` ${arrOperations[i]} `;
+        exp = exp.replace(replaceFrom, replaceTO);
     }
 
     exp = exp.split(' ');
@@ -54,26 +61,7 @@ function calculate(exp) {
     }
 
     if(check) {
-        let a;
-        for(let i = 0; i < exp.length;) {
-            let op;
-            let b;
-
-            if (i == 0) {
-                a = +exp[0];
-                op = exp[1];
-                b = +exp[2];
-                i = 3;
-            } else {
-                op = exp[i];
-                i++;
-                b = +exp[i];
-                i++
-            }
-
-            a = methods[op](a, b);
-        }
-        alert(`Результат вычисления выражения ${source}: ${a}`);
+        alert(`Результат вычисления: ${eval(source)}`);
     }
     else {
         alert('Неверное выражение');

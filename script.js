@@ -5,11 +5,12 @@ let returnLastInputData = creatureFunctionReturnLastInputData();
 
 inputObject.oninput = () => {
     let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/', '(', ')'];
+    let matchChars = ['+', '-', '*', '/'];
     let correctValue = inputObject.value;
 
     let newCharsOfInput = returnLastInputData(inputObject);
 
-    if(!checkDataByChars(newCharsOfInput, validChars)) {
+    if(!checkDataByChars(correctValue, validChars, matchChars)) {
         correctValue = errorDataEntry(correctValue, newCharsOfInput);
     }
 
@@ -24,6 +25,7 @@ inputObject.oninput = () => {
 
 function calculateFromPage(exp){
     if(!exp) return alert('Введите выражение!');
+    if(trackingParenthesis(exp) == 2) return alert('Закрыты не все скобки!');
     alert(getResultCalculationExpression(exp));
 }
 
@@ -239,9 +241,14 @@ function creatureFunctionReturnLastInputData() {
     }
 }
 
-function checkDataByChars(chars, arrayValidChars) {
+function checkDataByChars(chars, arrayValidChars, arrayMathChars) {
     for(let i = 0; i < chars.length; i++) {
         if(!arrayValidChars.includes(chars[i])) return false;
+        if(chars[i] === '-' || chars[i] === '+' || chars[i] === '/' || chars[i] === '*') {
+            for(let j = 0; j < arrayMathChars.length; j++) {
+                if(chars[i - 1] == arrayMathChars[j] || chars[i + 1] == arrayMathChars[j]) return  false;
+            }
+        }
     }
     return true;
 }

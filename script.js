@@ -4,13 +4,15 @@ let inputObject = document.getElementById('exp');
 let returnLastInputData = creatureFunctionReturnLastInputData();
 
 inputObject.oninput = () => {
-    let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/', '(', ')'];
-    let matchChars = ['+', '-', '*', '/'];
+    let matchCharsSolitary = ['-', '+'];
+    let matchCharsPaired = ['*', '/'];
+    let numberChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    let specChars = ['(', ')'];
     let correctValue = inputObject.value;
 
     let newCharsOfInput = returnLastInputData(inputObject);
 
-    let resultCheck = checkDataByChars(correctValue, validChars, matchChars);
+    let resultCheck = checkDataByChars(correctValue, numberChars, matchCharsSolitary, matchCharsPaired, specChars);
 
     if(!resultCheck) {
         correctValue = errorDataEntry(correctValue, newCharsOfInput);
@@ -174,6 +176,11 @@ function getCalculationResult(expression) {
                     }
                 }
                 if(expression[i] == '-') {
+                    if(expression[i + 1] === '-') {
+                        expression = replaceChars(i, i + 1, expression, '+');
+                        i--;
+                        continue;
+                    }
                     if(i == 0) {
                         if(!expression.includes('+') && !expression.includes('-', 1)) return;
                         continue;
@@ -247,13 +254,30 @@ function creatureFunctionReturnLastInputData() {
     }
 }
 
-function checkDataByChars(chars, arrayValidChars, arrayMathChars) {
+function checkDataByChars(chars, numberChars, matchCharsSolitary, matchCharsPaired, specChars) {
     let countReplace = 0;
+    let validChars = [];
+    let arrayMathChars = [];
+
+    validChars = validChars.concat(numberChars, matchCharsSolitary, matchCharsPaired, specChars);
+    arrayMathChars = arrayMathChars.concat(matchCharsSolitary, matchCharsPaired);
+
     for(let i = 0; i < chars.length; i++) {
-        if(!arrayValidChars.includes(chars[i])) return false;
+        if(!validChars.includes(chars[i])) return false;
 
         if(arrayMathChars.includes(chars[i]) &&  arrayMathChars.includes(chars[i - 1])) {
-            chars = replaceChars(i - 1, i - 1, chars, '');
+            if(matchCharsPaired.includes(chars[i]) && (i == 1 || specChars.includes(chars[i - 2]))) {
+                chars = replaceChars(i, i, chars, '');
+            }
+            else {
+                chars = replaceChars(i - 1, i - 1, chars, '');
+            }
+            i--;
+            countReplace++;
+        }
+
+        if(matchCharsPaired.includes(chars[i]) &&  !numberChars.includes(chars[i - 1])) {
+            chars = replaceChars(i, i, chars, '');
             i--;
             countReplace++;
         }

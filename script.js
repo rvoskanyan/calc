@@ -2,10 +2,10 @@
 
 let inputObject = document.getElementById('exp');
 let returnLastInputData = creatureFunctionReturnLastInputData();
+let matchCharsSolitary = ['-', '+'];
+let matchCharsPaired = ['*', '/'];
 
 inputObject.oninput = () => {
-    let matchCharsSolitary = ['-', '+'];
-    let matchCharsPaired = ['*', '/'];
     let numberChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let specChars = ['(', ')'];
     let correctValue = inputObject.value;
@@ -34,6 +34,7 @@ inputObject.oninput = () => {
 function calculateFromPage(exp){
     if(!exp) return alert('Введите выражение!');
     if(trackingParenthesis(exp) == 2) return alert('Закрыты не все скобки!');
+    if(matchCharsPaired.includes(exp[exp.length - 1]) || matchCharsSolitary.includes(exp[exp.length - 1])) return alert('Не допустим математический знак в конце выражения!');
     alert(getResultCalculationExpression(exp));
 }
 
@@ -266,17 +267,27 @@ function checkDataByChars(chars, numberChars, matchCharsSolitary, matchCharsPair
         if(!validChars.includes(chars[i])) return false;
 
         if(arrayMathChars.includes(chars[i]) &&  arrayMathChars.includes(chars[i - 1])) {
-            if(matchCharsPaired.includes(chars[i]) && (i == 1 || specChars.includes(chars[i - 2]))) {
+            if(matchCharsPaired.includes(chars[i]) && (i == 1 || chars[i-1] == '(' || chars[i - 2] == '(')) {
+                console.log(chars);
                 chars = replaceChars(i, i, chars, '');
+                console.log(chars);
             }
             else {
+                console.log(chars);
                 chars = replaceChars(i - 1, i - 1, chars, '');
+                console.log(chars);
             }
             i--;
             countReplace++;
         }
 
-        if(matchCharsPaired.includes(chars[i]) &&  !numberChars.includes(chars[i - 1])) {
+        if(chars[i] == ')' && (arrayMathChars.includes(chars[i - 1]) || chars[i - 1] == '(')) {
+            chars = replaceChars(i, i, chars, '');
+            i--;
+            countReplace++;
+        }
+
+        if(matchCharsPaired.includes(chars[i]) && !numberChars.includes(chars[i - 1]) && chars[i-1] != ')') {
             chars = replaceChars(i, i, chars, '');
             i--;
             countReplace++;

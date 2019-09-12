@@ -10,8 +10,14 @@ inputObject.oninput = () => {
 
     let newCharsOfInput = returnLastInputData(inputObject);
 
-    if(!checkDataByChars(correctValue, validChars, matchChars)) {
+    let resultCheck = checkDataByChars(correctValue, validChars, matchChars);
+
+    if(!resultCheck) {
         correctValue = errorDataEntry(correctValue, newCharsOfInput);
+    }
+
+    if(typeof(resultCheck) !== "boolean") {
+        correctValue = resultCheck;
     }
 
     let codeResultTracking = trackingParenthesis(correctValue);
@@ -242,19 +248,21 @@ function creatureFunctionReturnLastInputData() {
 }
 
 function checkDataByChars(chars, arrayValidChars, arrayMathChars) {
+    let countReplace = 0;
     for(let i = 0; i < chars.length; i++) {
         if(!arrayValidChars.includes(chars[i])) return false;
-        if(chars[i] === '-' || chars[i] === '+' || chars[i] === '/' || chars[i] === '*') {
-            for(let j = 0; j < arrayMathChars.length; j++) {
-                if(chars[i - 1] == arrayMathChars[j] || chars[i + 1] == arrayMathChars[j]) return  false;
-            }
+
+        if(arrayMathChars.includes(chars[i]) &&  arrayMathChars.includes(chars[i - 1])) {
+            chars = replaceChars(i - 1, i - 1, chars, '');
+            i--;
+            countReplace++;
         }
     }
-    return true;
+    if(!countReplace) return true;
+    return chars;
 }
 
 function errorDataEntry(value, deleteValue) {
-    alert('Недопустимое значение!');
     return value.replace(deleteValue, '');
 }
 
